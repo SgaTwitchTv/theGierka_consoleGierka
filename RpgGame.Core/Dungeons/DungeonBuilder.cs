@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using RpgGame.Core.Dungeons.Procedures;
+
+namespace RpgGame.Core.Dungeons
+{
+    public sealed class DungeonBuilder  // A builder class for constructing a dungeon by applying a series of dungeon procedures in a specified order. The builder allows for a fluent interface, enabling chaining of procedure additions and ultimately building the final dungeon world.
+    {
+        private readonly List<IDungeonProcedure> _procedures = new();
+
+        public DungeonBuilder Add(IDungeonProcedure procedure)  // Fluent interface: returns the builder itself to allow chaining
+        {
+            _procedures.Add(procedure);
+            return this;
+        }
+    
+
+        public World.World Build(int rows, int cols, int? seed = null)  // Builds the dungeon world by applying all added procedures in order. The world is initialized with the specified number of rows and columns, and an optional seed can be provided for reproducible random generation.
+        {
+            var world = new World.World(rows, cols);
+            var random = seed.HasValue ? new Random(seed.Value) : new Random();
+            var context = new DungeonBuildContext(world, random);
+            
+            foreach(var procedure in _procedures)
+            {
+                procedure.Apply(context);
+            }
+
+            return world;
+        }
+    }
+}

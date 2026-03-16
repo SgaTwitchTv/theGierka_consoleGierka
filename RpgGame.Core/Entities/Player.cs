@@ -20,6 +20,11 @@ namespace RpgGame.Core.Entities
             Hands = new Hands(Inventory);
         }
 
+        public void SetPosition(Pos position)  // Method to set the player's position
+        {
+            Position = position;
+        }
+
         public void TryMove(World.World world, int dRow, int dCol)  // Method to attempt moving the player in the world
         {
             var next = Position.Move(dRow, dCol);                 // Usage of the move function

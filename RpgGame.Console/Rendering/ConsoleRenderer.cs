@@ -8,7 +8,7 @@ namespace RpgGame.Console.Rendering
 {
     public sealed class ConsoleRenderer
     {
-        public void Draw(World world, Player player, string lastMessage)
+        public void Draw(World world, Player player, string lastMessage, int selectedIndex, string helpText)
         {
             // Don't clear the whole console each frame (causes flicker).
             // Move cursor to the top-left and overwrite lines individually.
@@ -26,21 +26,27 @@ namespace RpgGame.Console.Rendering
             var sb = new StringBuilder();
 
             // MAP + RIGHT HUD (20 rows)
-            for (int r = 0; r < World.Rows; r++)
+            for (int r = 0; r < world.Rows; r++)
             {
-                // map row
-                for (int c = 0; c < World.Cols; c++)
+                // Map row
+                for (int c = 0; c < world.Cols; c++)
                 {
                     if (player.Position.Row == r && player.Position.Col == c)
+                    {
                         sb.Append('X');
+                    }
                     else
+                    {
                         sb.Append(world.Cell(new Pos(r, c)).GetSymbol());
+                    }
                 }
 
-                sb.Append("  "); // gap
+                sb.Append("  ");
 
                 if (r < rightHud.Length)
+                {
                     sb.Append(rightHud[r]);
+                }
 
                 sb.AppendLine();
             }
@@ -61,17 +67,26 @@ namespace RpgGame.Console.Rendering
                 int shown = 0;
                 for (int i = cell.Items.Count - 1; i >= 0 && shown < 5; i--, shown++)
                 {
-                    if (shown > 0) sb.Append(" | ");
+                    if (shown > 0)
+                    {
+                        sb.Append(" | ");
+                    }
+
                     sb.Append($"{cell.Items[i].Symbol} {cell.Items[i].Name}");
                 }
                 if (cell.Items.Count > 5)
+                {
                     sb.Append($" | (+{cell.Items.Count - 5} more)");
+                }
                 sb.AppendLine();
             }
 
             // Inventory
             sb.Append("Inventory: ");
-            if (player.Inventory.Items.Count == 0) sb.AppendLine("(empty)");
+            if (player.Inventory.Items.Count == 0)
+            {
+                sb.AppendLine("(empty)");
+            }
             else
             {
                 int max = Math.Min(10, player.Inventory.Items.Count);
@@ -81,13 +96,20 @@ namespace RpgGame.Console.Rendering
                     {
                         sb.Append(" | ");
                     }
-                    var name = player.Inventory.Items[i].Name;
-                    sb.Append($"[{i}] {name}");
-                    //sb.Append($"{cell.Items[i].Symbol} {cell.Items[i].GetDescription()}");
 
+                    string marker = i == selectedIndex ? ">" : " ";
+                    string name = player.Inventory.Items[i].Name;
+
+                    sb.Append($"{marker}[{i}] {name}");
                 }
+
                 sb.AppendLine();
-                sb.AppendLine("Use Up/Down to select, L/R to equip.");
+            }
+
+            // Always show consolidated help text once
+            if (!string.IsNullOrWhiteSpace(helpText))
+            {
+                sb.AppendLine(helpText);
             }
 
             sb.AppendLine("WASD move | E pick up | Up/Down select | L/R equip | 1/2 unequip | Backspace drop | Q quit");
@@ -132,8 +154,8 @@ namespace RpgGame.Console.Rendering
             lines.Add($"WIS: {player.Stats.Wisdom}");
             lines.Add("");
 
-            //lines.Add("== LAST ==");
-            //lines.Add(string.IsNullOrWhiteSpace(lastMessage) ? "(none)" : lastMessage);
+            lines.Add("== LAST ==");
+            lines.Add(string.IsNullOrWhiteSpace(lastMessage) ? "(none)" : lastMessage);
 
             //x lines.Add("");
             lines.Add("== EQUIPPED ==");

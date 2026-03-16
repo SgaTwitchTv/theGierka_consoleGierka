@@ -5,6 +5,10 @@ using RpgGame.Core.Items.Currency;
 using RpgGame.Core.Items.Junk;
 using RpgGame.Core.Items.Weapons;
 using RpgGame.Core.Items.Decorators;
+using RpgGame.Core.Dungeons;
+using RpgGame.Core.Dungeons.Procedures;
+using RpgGame.Core.Dungeons.Placement;
+using RpgGame.Core.Dungeons.Strategies;
 
 namespace RpgGame.Core.World
 {
@@ -12,7 +16,7 @@ namespace RpgGame.Core.World
     {
         public static World CreateStage1Room()  // Method to create the first stage of the world
         {
-            var w = new World();
+            var w = new World(20, 40);
 
             // Set internal walls
             for (int c = 5; c < 30; c++)
@@ -42,6 +46,13 @@ namespace RpgGame.Core.World
             w.Cell(new Pos(11, 9)).Items.Add(new SharpModifier(new Items.Weapons.GreatAxe()));
 
             return w;
+        }
+
+        public static World CreateStage2TestWorld()
+        {
+            //return new DungeonBuilder().Add(new EmptyDungeonProcedure()).Build(20, 40);
+            var strategy = new DungeonGroundsStrategy();
+            return DungeonStrategyRunner.Build(strategy, 20, 40);
         }
     }
 }

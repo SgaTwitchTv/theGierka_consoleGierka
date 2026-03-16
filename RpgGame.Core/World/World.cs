@@ -6,13 +6,18 @@ namespace RpgGame.Core.World
 {
     public sealed class World   // The map class
     {
-        public const int Rows = 20;
-        public const int Cols = 40;
+        public int Rows { get; }
+        public int Cols { get; }
 
-        private readonly GridCell[,] _cells = new GridCell[Rows, Cols];
+        private readonly GridCell[,] _cells;
 
-        public World()
+        public World(int rows, int cols)
         {
+            Rows = rows;
+            Cols = cols;
+
+            _cells  = new GridCell[rows, cols];
+
             for (int r = 0; r < Rows; r++)
             {
                 for (int c = 0; c < Cols; c++)
@@ -34,6 +39,31 @@ namespace RpgGame.Core.World
             {
                 Cell(p).SetWall(true);
             }
+        }
+
+        public void SetFloor(Pos p) // Set a floor at the given position
+        {
+            if(IsInBounds(p))
+            {
+                Cell(p).SetWall(false);
+            }
+        }
+
+        public Pos FindFirstFloor() // Find the first floor cell in the map and return its position to spawn the player there
+        {
+            for (int r = 0; r < Rows; r++)
+            {
+                for (int c = 0; c < Cols; c++)
+                {
+                    var pos = new Pos(r, c);
+                    if (CanEnter(pos))
+                    {
+                        return pos;
+                    }
+                }
+            }
+
+            return new Pos(0, 0);
         }
     }
 }
