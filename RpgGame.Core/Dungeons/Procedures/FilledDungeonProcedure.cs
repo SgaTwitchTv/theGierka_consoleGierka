@@ -9,7 +9,12 @@ namespace RpgGame.Core.Dungeons.Procedures
     {
         public string Name => "Filled dungeon";
 
-        public void Apply(DungeonBuildContext context)
+        public IEnumerable<string> GetInstructions()
+        {
+            yield break;
+        }
+
+        public void Apply(DungeonBuildContext context)  // Apply method fills the entire dungeon with walls by iterating through each cell in the world and setting it as a wall
         {
             for (int r = 0; r < context.World.Rows; r++)
             {

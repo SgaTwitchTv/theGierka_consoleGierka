@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using RpgGame.Core.Combat;
 using RpgGame.Core.Entities;
 using RpgGame.Core.World;
 
@@ -8,7 +9,7 @@ namespace RpgGame.Console.Rendering
 {
     public sealed class ConsoleRenderer
     {
-        public void Draw(World world, Player player, string lastMessage, int selectedIndex, string helpText)
+        public void Draw(World world, Player player, string lastMessage, int selectedInventoryIndex, int selectedEnemyIndex, string helpText, bool isGameOver = false)
         {
             // Don't clear the whole console each frame (causes flicker).
             // Move cursor to the top-left and overwrite lines individually.
@@ -97,7 +98,7 @@ namespace RpgGame.Console.Rendering
                         sb.Append(" | ");
                     }
 
-                    string marker = i == selectedIndex ? ">" : " ";
+                    string marker = i == selectedInventoryIndex ? ">" : " ";
                     string name = player.Inventory.Items[i].Name;
 
                     sb.Append($"{marker}[{i}] {name}");
@@ -106,13 +107,46 @@ namespace RpgGame.Console.Rendering
                 sb.AppendLine();
             }
 
-            // Always show consolidated help text once
+            sb.Append("Nearby enemies: ");
+            var nearbyEnemies = CombatResolver.GetAdjacentEnemies(world, player);
+            if (nearbyEnemies.Count == 0)
+            {
+                sb.AppendLine("(none)");
+            }
+            else
+            {
+                int clampedSelectedEnemyIndex = 0;
+                if (nearbyEnemies.Count > 0)
+                {
+                    clampedSelectedEnemyIndex = Math.Clamp(selectedEnemyIndex, 0, nearbyEnemies.Count - 1);
+                }
+
+                for (int i = 0; i < nearbyEnemies.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        sb.Append(" | ");
+                    }
+
+                    var enemy = nearbyEnemies[i];
+                    var targetMarker = i == clampedSelectedEnemyIndex ? ">" : " ";
+                    sb.Append($"{targetMarker}{enemy.Symbol} {enemy.Name} HP:{enemy.Health} ATK:{enemy.Attack} ARM:{enemy.Armor}");
+                }
+
+                sb.AppendLine();
+            }
+
+            // Always show consolidated (context-aware) help text once
             if (!string.IsNullOrWhiteSpace(helpText))
             {
+                // helpText may contain multiple lines; append as-is
                 sb.AppendLine(helpText);
             }
 
-            sb.AppendLine("WASD move | E pick up | Up/Down select | L/R equip | 1/2 unequip | Backspace drop | Q quit");
+            if (isGameOver)
+            {
+                sb.AppendLine("GAME OVER - press any key to close");
+            }
 
             var output = sb.ToString();
             var lines = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -134,6 +168,7 @@ namespace RpgGame.Console.Rendering
 
         private static string[] BuildRightHudLines(Player player, string lastMessage)
         {
+            var effectiveStats = player.GetEffectiveStats();
             var lines = new List<string>();
 
             lines.Add("== PLAYER ==");
@@ -146,12 +181,12 @@ namespace RpgGame.Console.Rendering
             lines.Add("");
 
             lines.Add("== STATS ==");
-            lines.Add($"STR: {player.Stats.Strength}");
-            lines.Add($"DEX: {player.Stats.Dexterity}");
-            lines.Add($"HP : {player.Stats.Health}");
-            lines.Add($"LUK: {player.Stats.Luck}");
-            lines.Add($"AGR: {player.Stats.Aggression}");
-            lines.Add($"WIS: {player.Stats.Wisdom}");
+            lines.Add(FormatStat("STR", player.Stats.Strength, effectiveStats.Strength));
+            lines.Add(FormatStat("DEX", player.Stats.Dexterity, effectiveStats.Dexterity));
+            lines.Add(FormatStat("HP ", player.Stats.Health, effectiveStats.Health));
+            lines.Add(FormatStat("LUK", player.Stats.Luck, effectiveStats.Luck));
+            lines.Add(FormatStat("AGR", player.Stats.Aggression, effectiveStats.Aggression));
+            lines.Add(FormatStat("WIS", player.Stats.Wisdom, effectiveStats.Wisdom));
             lines.Add("");
 
             lines.Add("== LAST ==");
@@ -163,6 +198,16 @@ namespace RpgGame.Console.Rendering
             lines.Add($"Right: {(player.Hands.Right?.GetDescription() ?? "(empty)")}");
 
             return lines.ToArray();
+        }
+
+        private static string FormatStat(string label, int baseValue, int effectiveValue)
+        {
+            if (baseValue == effectiveValue)
+            {
+                return $"{label}: {effectiveValue}";
+            }
+
+            return $"{label}: {effectiveValue} ({baseValue})";
         }
     }
 }

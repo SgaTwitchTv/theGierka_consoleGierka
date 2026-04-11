@@ -12,6 +12,7 @@ using RpgGame.Core.Dungeons.Strategies;
 
 namespace RpgGame.Core.World
 {
+    // DESIGN PATTERN: Factory - creates pre-configured World instances for different stages
     public static class WorldFactory    // WorldFactory class to create different stages of the world
     {
         public static World CreateStage1Room()  // Method to create the first stage of the world

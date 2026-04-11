@@ -8,16 +8,18 @@ namespace RpgGame.Core.Dungeons.Placement
 {
     public sealed class RandomJunkItemSource : IRandomItemSource  // An item source that generates random junk items, which can be used for placing random items in the dungeon during the build process.
     {
-        public Item Next(Random random)
+        public IItem Next(Random random)
         {
             int roll = random.Next(3);
 
-            return roll switch
+            IItem item = roll switch
             {
                 0 => new Rock(),
                 1 => new OldBoot(),
                 _ => new BrokenAmulet()
             };
+
+            return item;
         }
     }
 }

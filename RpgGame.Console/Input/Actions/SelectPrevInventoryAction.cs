@@ -6,9 +6,11 @@ namespace RpgGame.Console.Input.Actions
 {
     public sealed class SelectPrevInventoryAction : IGameAction // This action allows the player to select the previous item in their inventory.
     {
-        public string HelpText => "";
+        public string HelpText => "Up - select previous inventory item";
+        public string HelpGroup => "Inventory";
 
         public bool Matches(ConsoleKeyInfo keyInfo) => keyInfo.Key == ConsoleKey.UpArrow;
+        public bool IsAvailable(GameContext context) => context.Player.Inventory.Items.Count > 0;
 
         public void Execute(GameContext context)
         {

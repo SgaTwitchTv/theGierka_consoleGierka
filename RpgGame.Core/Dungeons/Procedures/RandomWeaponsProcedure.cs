@@ -58,9 +58,7 @@ namespace RpgGame.Core.Dungeons.Procedures
 
         public IEnumerable<string> GetInstructions()    // This method provides instructions related to the random weapons procedure. It yields a series of strings that inform the player about the presence of weapons in the dungeon and how to equip or unequip them using specific keys (L, R for equipping and 1, 2, U for unequipping).
         {
-            yield return "Weapons are placed in the dungeon.";
-            yield return "Use L or R to equip the selected inventory item.";
-            yield return "Use 1, 2 or U to unequip.";
+            yield return "Weapons are scattered through the dungeon.";
         }
     }
 }

@@ -16,20 +16,19 @@ namespace RpgGame.Core.Dungeons.Strategies
             yield return new CentralRoomProcedure(7, 11);
             yield return new RandomPathsProcedure(12, 10);
             yield return new RandomChambersProcedure(6, 3, 6);
+            yield return new EnsureConnectedDungeonProcedure();
             yield return new RandomItemsProcedure(8, new RandomJunkItemSource());
             yield return new RandomWeaponsProcedure(5, new RandomWeaponSource());
+            yield return new RandomEnemiesProcedure(4);
         }
 
         public IEnumerable<string> GetInstructions()    // GetInstructions function that aggregates instructions from all the procedures created by the CreateProcedures function. It iterates through each procedure and checks if it implements the IInstructionContributor interface. If it does, it retrieves the instructions from that procedure and yields them as part of the overall instructions for the dungeon strategy. This allows for a modular approach where each procedure can contribute its own set of instructions, resulting in a comprehensive guide for players on how to navigate and interact with the dungeon.
         {
             foreach (var procedure in CreateProcedures())
             {
-                if (procedure is RpgGame.Core.Dungeons.IInstructionContributor contributor)
+                foreach (var instruction in procedure.GetInstructions())
                 {
-                    foreach (var instruction in contributor.GetInstructions())
-                    {
-                        yield return instruction;
-                    }
+                    yield return instruction;
                 }
             }
         }

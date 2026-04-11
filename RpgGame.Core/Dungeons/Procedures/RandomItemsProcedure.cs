@@ -21,8 +21,7 @@ namespace RpgGame.Core.Dungeons.Procedures
 
         public IEnumerable<string> GetInstructions()
         {
-            yield return "Items are placed in the dungeon.";
-            yield return "Stand on an item and press E to pick it up.";
+            yield return "Items are scattered through the dungeon.";
         }
 
         public void Apply(DungeonBuildContext context)  // The Apply method is responsible for placing the random items in the dungeon. It first collects all the floor positions in the dungeon world, and then randomly selects positions to place the items. The number of items placed is determined by the _itemCount field, and the items themselves are obtained from the _itemSource.

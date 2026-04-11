@@ -25,13 +25,16 @@ namespace RpgGame.Core.Entities
             Position = position;
         }
 
-        public void TryMove(World.World world, int dRow, int dCol)  // Method to attempt moving the player in the world
+        public bool TryMove(World.World world, int dRow, int dCol)  // Method to attempt moving the player in the world
         {
             var next = Position.Move(dRow, dCol);                 // Usage of the move function
             if (world.CanEnter(next))
             {
                 Position = next;
+                return true;
             }
+
+            return false;
         }
 
         public bool TryPickUp(World.World world, out string message)    // Method to attempt picking up an item from the current cell in the world
@@ -45,7 +48,7 @@ namespace RpgGame.Core.Entities
             }
 
             // Pick top item (last)
-            Item item = cell.Items[^1];
+            IItem item = cell.Items[^1];
             cell.Items.RemoveAt(cell.Items.Count - 1);
 
             item.OnPickUp(this);    // Call the OnPickUp method of the item, passing the player as an argument
@@ -65,7 +68,7 @@ namespace RpgGame.Core.Entities
 
         public bool TryDropFromInventory(World.World world, int inventoryIndex, out string message) // Method to attempt dropping an item from the player's inventory into the current cell in the world
         {
-            if (!Inventory.TryRemoveAt(inventoryIndex, out var item) || item is null)   // Try to remove the item from the inventory at the specified index, and check if it was successful
+            if (!Inventory.TryRemoveAt(inventoryIndex, out var item) || item == null)   // Try to remove the item from the inventory at the specified index, and check if it was successful
             {
                 message = "Invalid inventory index.";
                 return false;
@@ -74,6 +77,32 @@ namespace RpgGame.Core.Entities
             world.Cell(Position).Items.Add(item);
             message = $"Dropped: {item.Name}";
             return true;
+        }
+
+        public Items.Modifiers.PlayerStatModifier GetEquippedStatModifier()
+        {
+            var modifier = Items.Modifiers.PlayerStatModifier.None;
+
+            foreach (var item in Hands.GetHeldItems())
+            {
+                modifier = modifier.Combine(item.GetStatModifier());
+            }
+
+            return modifier;
+        }
+
+        public Stats GetEffectiveStats()
+        {
+            var modifier = GetEquippedStatModifier();
+
+            return new Stats(
+                Stats.Strength + modifier.Strength,
+                Stats.Dexterity + modifier.Dexterity,
+                Stats.Health + modifier.Health,
+                Stats.Luck + modifier.Luck,
+                Stats.Aggression + modifier.Aggression,
+                Stats.Wisdom + modifier.Wisdom
+            );
         }
     }
 }

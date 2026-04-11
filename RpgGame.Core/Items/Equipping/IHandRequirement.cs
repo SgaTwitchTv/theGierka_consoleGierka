@@ -8,7 +8,7 @@ namespace RpgGame.Core.Items.Equipping
 {
     public interface IHandRequirement   // Defines how a weapon should be equipped
     {
-        void Equip(Player player, Weapon weapon, HandSlot preferredSlot);
-        void Unequip(Player player, Weapon weapon);
+        void Equip(Player player, IWeapon weapon, HandSlot preferredSlot);
+        void Unequip(Player player, IWeapon weapon);
     }
 }

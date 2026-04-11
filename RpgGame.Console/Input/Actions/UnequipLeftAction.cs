@@ -7,9 +7,11 @@ namespace RpgGame.Console.Input.Actions
 {
     public sealed class UnequipLeftAction : IGameAction
     {
-        public string HelpText => "";
+        public string HelpText => "1 - unequip left hand";
+        public string HelpGroup => "Inventory";
 
         public bool Matches(ConsoleKeyInfo keyInfo) => keyInfo.Key == ConsoleKey.D1;
+        public bool IsAvailable(GameContext context) => context.Player.Hands.Left != null;
 
         public void Execute(GameContext context)
         {

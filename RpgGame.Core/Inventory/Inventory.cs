@@ -7,13 +7,13 @@ namespace RpgGame.Core.Inventory
 {
     public sealed class Inventory   // Inventory class
     {
-        private readonly List<Item> _items = new();
+        private readonly List<IItem> _items = new();
 
-        public IReadOnlyList<Item> Items => _items;
+        public IReadOnlyList<IItem> Items => _items;
 
-        public void Add(Item item) => _items.Add(item);        // Item add
+        public void Add(IItem item) => _items.Add(item);        // Item add
 
-        public bool TryRemoveAt(int index, out Item? item)  // Item remove
+        public bool TryRemoveAt(int index, out IItem? item)  // Item remove
         {
             if (index < 0 || index >= _items.Count)
             {

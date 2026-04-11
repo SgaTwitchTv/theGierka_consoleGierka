@@ -4,6 +4,7 @@ using System.Text;
 
 namespace RpgGame.Core.World
 {
+    // DESIGN: Aggregate / Container - represents the game map composed of grid cells; provides operations to query and modify cells.
     public sealed class World   // The map class
     {
         public int Rows { get; }
@@ -31,7 +32,7 @@ namespace RpgGame.Core.World
 
         public GridCell Cell(Pos p) => _cells[p.Row, p.Col];    // Get the cell at the given position
 
-        public bool CanEnter(Pos p) => IsInBounds(p) && !Cell(p).IsWall;    // Check if the player can enter the cell
+        public bool CanEnter(Pos p) => IsInBounds(p) && !Cell(p).IsWall && Cell(p).Enemy == null;    // Check if the player can enter the cell
 
         public void SetWall(Pos p)  // Set a wall at the given position
         {

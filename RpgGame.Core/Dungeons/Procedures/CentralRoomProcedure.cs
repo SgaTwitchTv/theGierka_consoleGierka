@@ -18,6 +18,11 @@ namespace RpgGame.Core.Dungeons.Procedures
             _width = width;
         }
 
+        public IEnumerable<string> GetInstructions()
+        {
+            yield break;
+        }
+
         public void Apply(DungeonBuildContext context)  // Applies the central room procedure to the dungeon build context
         {
 

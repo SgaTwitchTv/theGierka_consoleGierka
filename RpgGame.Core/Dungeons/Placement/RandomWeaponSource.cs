@@ -4,30 +4,47 @@ using System.Text;
 using RpgGame.Core.Items;
 using RpgGame.Core.Items.Weapons;
 using RpgGame.Core.Items.Decorators;
+using RpgGame.Core.Items.Modifiers;
 
 namespace RpgGame.Core.Dungeons.Placement
 {
     public sealed class RandomWeaponSource : IRandomWeaponSource    // This class generates random weapons with possible modifiers for placement in the dungeon.
     {
-        public Item Next(Random random) // This method generates a random weapon, potentially with a modifier, based on random rolls.
+        public IItem Next(Random random) // This method generates a random weapon, potentially with a modifier, based on random rolls.
         {
-            int baseRoll = random.Next(3);
-            Weapon baseWeapon = baseRoll switch
+            int baseRoll = random.Next(4);
+            IWeapon baseWeapon = baseRoll switch
             {
                 0 => new Dagger(),
                 1 => new Sword(),
-                _ => new GreatAxe(),
+                2 => new GreatAxe(),
+                3 => new Wand(),
+                _ => new Dagger(),
             };
 
-            int modifierRoll = random.Next(4);
+            IWeapon modifiedWeapon = baseWeapon;
 
-            return modifierRoll switch
+            if (random.Next(4) == 1)
             {
-                0 => baseWeapon,
-                1 => new SharpModifier(baseWeapon),
-                2 => new HeavyModifier(baseWeapon),
-                _ => baseWeapon
-            };
+                modifiedWeapon = new SharpModifier(modifiedWeapon);
+            }
+
+            if (random.Next(4) == 1)
+            {
+                modifiedWeapon = new HeavyModifier(modifiedWeapon);
+            }
+
+            if (random.Next(3) == 1)
+            {
+                modifiedWeapon = new StrongWeaponModifier(modifiedWeapon);
+            }
+
+            if (random.Next(3) == 1)
+            {
+                modifiedWeapon = new UnluckyWeaponModifier(modifiedWeapon);
+            }
+
+            return modifiedWeapon;
         }
     }
 }

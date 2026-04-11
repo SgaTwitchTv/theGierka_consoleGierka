@@ -30,5 +30,6 @@ namespace RpgGame.Core.Entities
         public void ModifyLuck(int delta) => Luck += delta;
         public void ModifyAggression(int delta) => Aggression += delta;
         public void ModifyWisdom(int delta) => Wisdom += delta;
+        public void ReduceHealth(int amount) => Health = Math.Max(0, Health - amount);
     }
 }

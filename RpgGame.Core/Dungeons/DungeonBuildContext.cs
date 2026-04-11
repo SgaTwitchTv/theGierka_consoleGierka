@@ -5,6 +5,7 @@ using RpgGame.Core.World;
 
 namespace RpgGame.Core.Dungeons
 {
+    // DESIGN: Context / Parameter Object - carries shared state used by procedures during dungeon build.
     public sealed class DungeonBuildContext // Context class to hold the world and random generator for dungeon building
     {
         public World.World World { get; }

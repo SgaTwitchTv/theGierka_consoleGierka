@@ -164,7 +164,7 @@ namespace RpgGame.Console
             var actions = item.GetInventoryActions(_player).ToList();     // Get actions for the item, which should include equipping if it's equippable
 
             var action = actions.FirstOrDefault(a => a.Label == label); // Find the action that matches the label (e.g., "Equip Left" or "Equip Right")
-            if (action is null)
+            if (action == null)
             {
                 _lastMessage = $"No action: {label}";
                 return;
@@ -172,7 +172,7 @@ namespace RpgGame.Console
 
              // Remove item from inventory BEFORE equipping, otherwise dupes
             // (hands store reference; inventory should not keep it)
-            if (_player.Inventory.TryRemoveAt(_selectedIndex, out var removed) && removed is not null)
+            if (_player.Inventory.TryRemoveAt(_selectedIndex, out var removed) && removed != null)
             {
                 action.Execute();
                 _lastMessage = $"{label}: {removed.Name}";
@@ -228,6 +228,10 @@ namespace RpgGame.Console
                 new MoveLeftAction(),
                 new MoveRightAction(),
                 new PickUpAction(),
+                new NormalAttackAction(),
+                new StealthAttackAction(),
+                new MagicalAttackAction(),
+                new SelectNextEnemyAction(),
                 new SelectPrevInventoryAction(),
                 new SelectNextInventoryAction(),
                 new EquipLeftAction(),
@@ -247,7 +251,7 @@ namespace RpgGame.Console
 
             while (_context.IsRunning)
             {
-                _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, GetHelpText());
+                _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, _context.SelectedEnemyIndex, GetHelpText(), _context.IsGameOver);
 
                 var keyInfo = System.Console.ReadKey(true);
 
@@ -256,6 +260,7 @@ namespace RpgGame.Console
                 if (action != null)
                 {
                     action.Execute(_context);
+                    NormalizeSelections();
                 }
                 else
                 {
@@ -263,14 +268,92 @@ namespace RpgGame.Console
                 }
             }
 
-            _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, GetHelpText());
+            _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, _context.SelectedEnemyIndex, GetHelpText(), _context.IsGameOver);
+
+            if (_context.IsGameOver)
+            {
+                System.Console.ReadKey(true);
+            }
         }
 
-        private string GetHelpText()    // A function to aggregate help text from all actions and strategy instructions, ensuring that the player has a comprehensive guide to available controls and instructions based on the current dungeon strategy. It combines the help text from each action with any additional instructions provided by the dungeon strategy, removes duplicates, and formats it into a single string for display.
+        private void NormalizeSelections()
         {
-            var actionHelp = _actions.Select(a => a.HelpText).Where(h => !string.IsNullOrWhiteSpace(h));
-            var allHelp = actionHelp.Concat(_strategyInstructions).Where(h => !string.IsNullOrWhiteSpace(h)).Distinct();
-            return string.Join(" | ", allHelp);
+            int inventoryCount = _context.Player.Inventory.Items.Count;
+            if (inventoryCount == 0)
+            {
+                _context.SelectedInventoryIndex = 0;
+            }
+            else
+            {
+                _context.SelectedInventoryIndex = Math.Clamp(_context.SelectedInventoryIndex, 0, inventoryCount - 1);
+            }
+
+            int enemyCount = RpgGame.Core.Combat.CombatResolver.GetAdjacentEnemies(_context.World, _context.Player).Count;
+            if (enemyCount == 0)
+            {
+                _context.SelectedEnemyIndex = 0;
+            }
+            else
+            {
+                _context.SelectedEnemyIndex = Math.Clamp(_context.SelectedEnemyIndex, 0, enemyCount - 1);
+            }
+        }
+
+        private string GetHelpText()
+        {
+            var help = new List<string>();
+            var availableActions = _actions.Where(a => a.IsAvailable(_context)).ToList();
+
+            var movementHelp = availableActions
+                .Where(a => a.HelpGroup == "Movement")
+                .Select(a => a.HelpText)
+                .Distinct()
+                .ToList();
+
+            if (movementHelp.Count > 0)
+            {
+                help.Add(string.Join(" | ", movementHelp));
+            }
+
+            foreach (var actionHelp in availableActions
+                .Where(a => a.HelpGroup == "Actions")
+                .Select(a => a.HelpText)
+                .Distinct())
+            {
+                help.Add(actionHelp);
+            }
+
+            foreach (var actionHelp in availableActions
+                .Where(a => a.HelpGroup == "Combat")
+                .Select(a => a.HelpText)
+                .Distinct())
+            {
+                help.Add(actionHelp);
+            }
+
+            foreach (var actionHelp in availableActions
+                .Where(a => a.HelpGroup == "Inventory")
+                .Select(a => a.HelpText)
+                .Distinct())
+            {
+                help.Add(actionHelp);
+            }
+
+            foreach (var actionHelp in availableActions
+                .Where(a => a.HelpGroup == "System")
+                .Select(a => a.HelpText)
+                .Distinct())
+            {
+                help.Add(actionHelp);
+            }
+
+            // Strategy instructions (optional)
+            foreach (var s in _strategyInstructions)
+            {
+                if (!string.IsNullOrWhiteSpace(s) && !help.Contains(s)) help.Add(s);
+            }
+
+            return string.Join(Environment.NewLine, help.Distinct());
         }
     }
 }

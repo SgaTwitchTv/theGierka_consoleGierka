@@ -11,7 +11,9 @@ internal static class Program
     {
         System.Console.Title = "RPG Game";
 
-        var strategy = new DungeonGroundsStrategy();
+        var random = new Random();
+        var strategy = RandomStrategySelector.Choose(random);
+        //var strategy = new DungeonGroundsStrategy();
         var world = DungeonStrategyRunner.Build(strategy, 20, 40);
 
         var player = new Player();

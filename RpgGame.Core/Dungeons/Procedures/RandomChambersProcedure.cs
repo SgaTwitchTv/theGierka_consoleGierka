@@ -20,6 +20,11 @@ namespace RpgGame.Core.Dungeons.Procedures
             _maxSize = maxSize;
         }
 
+        public IEnumerable<string> GetInstructions()
+        {
+            yield break;
+        }
+
         public void Apply(DungeonBuildContext context)
         {
             for(int i = 0; i < _chamberCount; i++)

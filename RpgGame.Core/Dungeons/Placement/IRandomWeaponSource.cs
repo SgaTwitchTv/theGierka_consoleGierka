@@ -7,6 +7,6 @@ namespace RpgGame.Core.Dungeons.Placement
 {
     public interface IRandomWeaponSource
     {
-        Item Next(Random random);
+        IItem Next(Random random);
     }
 }
