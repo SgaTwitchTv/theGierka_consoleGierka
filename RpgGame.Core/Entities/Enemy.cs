@@ -2,7 +2,7 @@ using RpgGame.Core.World;
 
 namespace RpgGame.Core.Entities
 {
-    public sealed class Enemy
+    public sealed class Enemy   // Enemy class implementation
     {
         public string Name { get; }
         public char Symbol { get; }

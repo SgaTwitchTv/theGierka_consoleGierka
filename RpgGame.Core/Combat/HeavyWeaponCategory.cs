@@ -3,7 +3,7 @@ using RpgGame.Core.Items.Weapons;
 
 namespace RpgGame.Core.Combat
 {
-    public sealed class HeavyWeaponCategory : IWeaponCategory
+    public sealed class HeavyWeaponCategory : IWeaponCategory   // Implements the IWeaponCategory interface to define the behavior of heavy weapons in combat. It provides specific implementations for calculating attack damage and defense values based on the heavy attack style.
     {
         public string DisplayName => "Heavy";
 

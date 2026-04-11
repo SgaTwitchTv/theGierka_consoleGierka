@@ -10,7 +10,7 @@ using RpgGame.Core.Items.Weapons.Actions;
 namespace RpgGame.Core.Items.Weapons
 {
     // DESIGN: Template / Factory for inventory actions - base weapon provides shared behavior and produces concrete equip actions.
-    public abstract class Weapon : Item, IWeapon // Weapon class
+    public abstract class Weapon : Item, IWeapon // Weapon class inherits from Item and implements IWeapon interface, representing a weapon item in the game
     {
         public virtual int Damage { get; }
         public int Defense { get; }

@@ -3,7 +3,7 @@ using RpgGame.Core.Items.Weapons;
 
 namespace RpgGame.Core.Combat
 {
-    public sealed class LightWeaponCategory : IWeaponCategory
+    public sealed class LightWeaponCategory : IWeaponCategory   // Implements the IWeaponCategory interface to define the behavior of light weapons in combat. It provides specific implementations for calculating attack damage and defense values based on the light attack style.
     {
         public string DisplayName => "Light";
 

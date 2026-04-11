@@ -3,7 +3,7 @@ using RpgGame.Core.World;
 
 namespace RpgGame.Core.Dungeons.Procedures
 {
-    public sealed class RandomEnemiesProcedure : IDungeonProcedure
+    public sealed class RandomEnemiesProcedure : IDungeonProcedure // A procedure that adds a specified number of random enemies to the dungeon.
     {
         public string Name => "Random enemies";
 
@@ -19,7 +19,7 @@ namespace RpgGame.Core.Dungeons.Procedures
             yield return "Enemies lurk in the dungeon.";
         }
 
-        public void Apply(DungeonBuildContext context)
+        public void Apply(DungeonBuildContext context)  // This method collects all free positions in the dungeon and randomly places the specified number of enemies on those positions.
         {
             var floorPositions = CollectFreePositions(context.World);
 
@@ -28,7 +28,7 @@ namespace RpgGame.Core.Dungeons.Procedures
                 return;
             }
 
-            for (int i = 0; i < _enemyCount && floorPositions.Count > 0; i++)
+            for (int i = 0; i < _enemyCount && floorPositions.Count > 0; i++)  // Loop through the number of enemies to add, ensuring we don't exceed the available free positions.
             {
                 int index = context.Random.Next(floorPositions.Count);
                 var pos = floorPositions[index];
@@ -39,7 +39,7 @@ namespace RpgGame.Core.Dungeons.Procedures
             }
         }
 
-        private static List<Pos> CollectFreePositions(World.World world)
+        private static List<Pos> CollectFreePositions(World.World world)    // This method iterates through all cells in the world and collects positions that are enterable and have no items, indicating they are free for placing enemies.
         {
             var positions = new List<Pos>();
 

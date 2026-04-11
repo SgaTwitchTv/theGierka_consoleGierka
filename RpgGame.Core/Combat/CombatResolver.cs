@@ -9,7 +9,7 @@ namespace RpgGame.Core.Combat
     {
         public static bool HasAdjacentEnemy(World.World world, Player player) => GetAdjacentEnemies(world, player).Count > 0; // A method that checks if there is an adjacent enemy to the player by looking for adjacent enemies.
 
-        public static IReadOnlyList<Enemy> GetAdjacentEnemies(World.World world, Player player)
+        public static IReadOnlyList<Enemy> GetAdjacentEnemies(World.World world, Player player) // Method that retrieves a list of enemies adjacent to the player's current position. It checks all the directions for enemies and returns a list of any found. If there are no adjacent enemies, it returns an empty list.
         {
             var enemies = new List<Enemy>();
             var positions = new[]
@@ -88,6 +88,9 @@ namespace RpgGame.Core.Combat
             return true;
         }
 
+          // Implementing the interface methods to calculate attack damage and defense values based on the equipped item, player's stats, and the chosen attack style.
+         //  If the item is a weapon, it uses the weapon category's methods to get the attack damage and defense values.
+        //   If it's not a weapon, it falls back to the attack style's methods for held items.
         private static int GetAttackDamage(IItem item, Stats stats, IAttackStyle attackStyle)
         {
             if (item is IWeapon weapon)

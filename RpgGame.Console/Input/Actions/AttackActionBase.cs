@@ -21,7 +21,7 @@ namespace RpgGame.Console.Input.Actions
 
         public bool IsAvailable(GameContext context) => CombatResolver.HasAdjacentEnemy(context.World, context.Player);
 
-        public void Execute(GameContext context)
+        public void Execute(GameContext context)    // Execute method that tries to attack an enemy, finds adjacent entities and checks whether are they killed
         {
             CombatResolver.TryAttack(context.World, context.Player, _attackStyle, context.SelectedEnemyIndex, out var message, out var playerDefeated);
             context.LastMessage = message;
@@ -36,7 +36,7 @@ namespace RpgGame.Console.Input.Actions
             }
         }
 
-        private static string FormatKey(ConsoleKey key)
+        private static string FormatKey(ConsoleKey key) // All keys are suppsed to be upper letters
         {
             var keyText = key.ToString();
 

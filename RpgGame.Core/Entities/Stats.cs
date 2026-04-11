@@ -23,7 +23,7 @@ namespace RpgGame.Core.Entities
             Wisdom = wisdom;
         }
 
-        // Optional helpers (not required now, but handy later)
+        // Helper methods to modify stats, ensuring that they don't drop below zero
         public void ModifyStrength(int delta) => Strength += delta;
         public void ModifyDexterity(int delta) => Dexterity += delta;
         public void ModifyHealth(int delta) => Health += delta;

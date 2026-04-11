@@ -7,7 +7,7 @@ using RpgGame.Core.Items.Weapons.Actions;
 
 namespace RpgGame.Core.Items.Decorators
 {
-    public abstract class WeaponDecorator : Items.Weapons.Weapon    // Weapon Decorator class to allow for easy creation of new weapons by wrapping existing ones and modifying their properties (e.g., damage, name)
+    public abstract class WeaponDecorator : Items.Weapons.Weapon    // Weapon Decorator class to allow for easy creation of new weapons by wrapping existing ones and modifying their properties
     {
         protected readonly Items.Weapons.IWeapon Inner;
         private readonly int _damageDelta;
@@ -18,7 +18,7 @@ namespace RpgGame.Core.Items.Decorators
             _damageDelta = damageBonus;
         }
 
-        private static string BuildName(string innerName, string modifierName)
+        private static string BuildName(string innerName, string modifierName)  // This method constructs the name of the decorated weapon by appending the modifier name in parentheses. If the inner name already contains the modifier, it avoids duplication.
         {
             if (string.IsNullOrEmpty(innerName))
             {
@@ -26,6 +26,7 @@ namespace RpgGame.Core.Items.Decorators
             }
 
             var token = $"({modifierName})";
+
             // If the modifier is already present in the inner name, don't append it again.
             if (innerName.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0)
             {

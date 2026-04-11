@@ -9,8 +9,8 @@ namespace RpgGame.Core.World
     public sealed class GridCell // Each map cell class
     {
         public bool IsWall { get; private set; }    // Flag - if the cell is a wall
-        public List<IItem> Items { get; } = new();   // Items laying in the cell
-        public Enemy? Enemy { get; set; }
+        public List<IItem> Items { get; } = new();   // Items laying in the cell (if any)
+        public Enemy? Enemy { get; set; }   // Enemy in the cell (if any)
 
         public GridCell(bool isWall = false) => IsWall = isWall;
 

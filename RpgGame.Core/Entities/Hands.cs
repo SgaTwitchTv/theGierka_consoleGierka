@@ -119,7 +119,7 @@ namespace RpgGame.Core.Entities
             }
         }
 
-        public IReadOnlyList<IWeapon> GetEquippedWeapons()
+        public IReadOnlyList<IWeapon> GetEquippedWeapons()  // Method that returns a list of currently equipped weapons
         {
             var equipped = new List<IWeapon>();
 
@@ -136,7 +136,7 @@ namespace RpgGame.Core.Entities
             return equipped;
         }
 
-        public IReadOnlyList<IItem> GetHeldItems()
+        public IReadOnlyList<IItem> GetHeldItems()  // Method that returns a list of currently held items
         {
             var held = new List<IItem>();
 

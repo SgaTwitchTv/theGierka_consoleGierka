@@ -79,7 +79,7 @@ namespace RpgGame.Core.Entities
             return true;
         }
 
-        public Items.Modifiers.PlayerStatModifier GetEquippedStatModifier()
+        public Items.Modifiers.PlayerStatModifier GetEquippedStatModifier() // Method to calculate the combined stat modifier from all equipped items in the player's hands
         {
             var modifier = Items.Modifiers.PlayerStatModifier.None;
 
@@ -91,7 +91,7 @@ namespace RpgGame.Core.Entities
             return modifier;
         }
 
-        public Stats GetEffectiveStats()
+        public Stats GetEffectiveStats()    // Method to calculate the effective stats of the player by combining the base stats with the modifiers from equipped items
         {
             var modifier = GetEquippedStatModifier();
 
