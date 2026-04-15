@@ -17,6 +17,7 @@ namespace RpgGame.Console.Input.Actions
         {
             context.Player.Hands.UnequipSlotToInventory(HandSlot.Right);
             context.LastMessage = "Unequipped right hand.";
+            RpgGame.Core.Logging.GameLog.Write(context.LastMessage);
         }
     }
 }

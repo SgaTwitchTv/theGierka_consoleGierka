@@ -8,6 +8,7 @@ namespace RpgGame.Core.Entities
 {
     public sealed class Player  // Player class
     {
+        public string Name { get; }
         public Pos Position { get; private set; } = new(0, 0);      // Set initial position of the player to (0, 0)
         public Wallet Wallet { get; } = new();                    // Initialize the wallet
         public Inventory.Inventory Inventory { get; } = new();  // Initialize the inventory
@@ -15,8 +16,9 @@ namespace RpgGame.Core.Entities
 
         public Stats Stats { get; } = new Stats(strength: 5, dexterity: 5, health: 20, luck: 1, aggression: 3, wisdom: 2);  // Initialize the stats of the player with some default values
 
-        public Player()
+        public Player(string name = "Hero")
         {
+            Name = name;
             Hands = new Hands(Inventory);
         }
 

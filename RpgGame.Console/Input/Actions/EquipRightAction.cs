@@ -50,6 +50,7 @@ namespace RpgGame.Console.Input.Actions
             {
                 action.Execute();
                 context.LastMessage = $"Equipped right: {removed.Name}";
+                RpgGame.Core.Logging.GameLog.Write(context.LastMessage);
 
                 if (context.SelectedInventoryIndex >= context.Player.Inventory.Items.Count)
                 {

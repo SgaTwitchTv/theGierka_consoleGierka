@@ -1,4 +1,5 @@
 using RpgGame.Core.Entities;
+using RpgGame.Core.Dungeons.Placement;
 using RpgGame.Core.World;
 
 namespace RpgGame.Core.Dungeons.Procedures
@@ -8,10 +9,16 @@ namespace RpgGame.Core.Dungeons.Procedures
         public string Name => "Random enemies";
 
         private readonly int _enemyCount;
+        private readonly IEnemySource _enemySource;
 
-        public RandomEnemiesProcedure(int enemyCount)
+        public RandomEnemiesProcedure(int enemyCount) : this(enemyCount, new DefaultEnemySource())
+        {
+        }
+
+        public RandomEnemiesProcedure(int enemyCount, IEnemySource enemySource)
         {
             _enemyCount = enemyCount;
+            _enemySource = enemySource;
         }
 
         public IEnumerable<string> GetInstructions()
@@ -34,7 +41,7 @@ namespace RpgGame.Core.Dungeons.Procedures
                 var pos = floorPositions[index];
                 floorPositions.RemoveAt(index);
 
-                var enemy = new Enemy("Goblin", '!', pos, health: 12, attack: 6, armor: 2);
+                var enemy = _enemySource.Next(context.Random, pos);
                 context.World.Cell(pos).Enemy = enemy;
             }
         }

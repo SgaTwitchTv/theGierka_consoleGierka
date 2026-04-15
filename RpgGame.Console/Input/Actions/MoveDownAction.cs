@@ -14,7 +14,14 @@ namespace RpgGame.Console.Input.Actions
 
         public void Execute(GameContext context)
         {
-            context.LastMessage = context.Player.TryMove(context.World, 1, 0) ? "Moved down." : "Blocked.";
+            var target = context.Player.Position.Move(1, 0);
+            bool moved = context.Player.TryMove(context.World, 1, 0);
+            context.LastMessage = moved ? "Moved down." : "Blocked.";
+
+            if (!moved && context.World.IsInBounds(target) && context.World.Cell(target).IsWall)
+            {
+                RpgGame.Core.Logging.GameLog.Write($"Attempted to walk into a wall at {target.Row},{target.Col}.");
+            }
         }
     }
 }

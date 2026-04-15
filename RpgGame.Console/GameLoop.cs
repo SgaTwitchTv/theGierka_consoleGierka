@@ -8,6 +8,7 @@ using System.Text;
 using Console = System.Console;
 using RpgGame.Console.Input;
 using RpgGame.Console.Input.Actions;
+using RpgGame.Core.Logging;
 
 namespace RpgGame.Console
 {
@@ -17,10 +18,11 @@ namespace RpgGame.Console
         private readonly GameContext _context;                 // The game context that holds the world, player, and other state information needed for the game loop
         private readonly List<IGameAction> _actions;          // A list of game actions that can be performed based on player input - each action knows how to match input and execute itself
         private readonly List<string> _strategyInstructions; // Additional instructions from the dungeon strategy to display in the help text
-        public GameLoop(World world, Player player, ConsoleRenderer renderer, IEnumerable<string> strategyInstructions)
+        public GameLoop(World world, Player player, ConsoleRenderer renderer, IEnumerable<string> strategyInstructions, string initialMessage = "")
         {
             _renderer = renderer;
             _context = new GameContext(world, player);
+            _context.LastMessage = initialMessage;
             _strategyInstructions = strategyInstructions.ToList();
 
             _actions = new List<IGameAction>    // Initialize the list of available game actions - these will be checked against player input each frame to determine what action to execute
@@ -34,6 +36,7 @@ namespace RpgGame.Console
                 new StealthAttackAction(),
                 new MagicalAttackAction(),
                 new SelectNextEnemyAction(),
+                new ShowJournalAction(),
                 new SelectPrevInventoryAction(),
                 new SelectNextInventoryAction(),
                 new EquipLeftAction(),
@@ -54,7 +57,7 @@ namespace RpgGame.Console
             while (_context.IsRunning) // Main game loop - continues until the game is over or the player quits
             {
                 // Draw the current state of the world, player, and any messages to the console
-                _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, _context.SelectedEnemyIndex, GetHelpText(), _context.IsGameOver);
+                _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, _context.SelectedEnemyIndex, GetHelpText(), GameLog.Current.GetRecentEntries(6), _context.IsGameOver);
 
                 var keyInfo = System.Console.ReadKey(true);
 
@@ -68,10 +71,11 @@ namespace RpgGame.Console
                 else
                 {
                     _context.LastMessage = "NOT ASSIGNED";
+                    GameLog.Write($"Unknown key pressed: {keyInfo.Key}.");
                 }
             }
 
-            _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, _context.SelectedEnemyIndex, GetHelpText(), _context.IsGameOver);
+            _renderer.Draw(_context.World, _context.Player, _context.LastMessage, _context.SelectedInventoryIndex, _context.SelectedEnemyIndex, GetHelpText(), GameLog.Current.GetRecentEntries(6), _context.IsGameOver);
 
             if (_context.IsGameOver)
             {

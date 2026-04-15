@@ -9,7 +9,7 @@ namespace RpgGame.Console.Rendering
 {
     public sealed class ConsoleRenderer
     {
-        public void Draw(World world, Player player, string lastMessage, int selectedInventoryIndex, int selectedEnemyIndex, string helpText, bool isGameOver = false)
+        public void Draw(World world, Player player, string lastMessage, int selectedInventoryIndex, int selectedEnemyIndex, string helpText, IReadOnlyList<string> recentLogEntries, bool isGameOver = false)
         {
             // Don't clear the whole console each frame (causes flicker).
             // Move cursor to the top-left and overwrite lines individually.
@@ -21,7 +21,7 @@ namespace RpgGame.Console.Rendering
             System.Console.SetCursorPosition(0, 0);
             */
 
-            // Right panel: only player/wallet/stats/last
+            // Right panel: only player/wallet/stats/last/equipment
             var rightHud = BuildRightHudLines(player, lastMessage);
 
             var sb = new StringBuilder();
@@ -145,8 +145,11 @@ namespace RpgGame.Console.Rendering
 
             if (isGameOver)
             {
-                sb.AppendLine("GAME OVER - press any key to close");
+                sb.AppendLine($"GAME OVER - log saved to {RpgGame.Core.Logging.GameLog.Current.LogFilePath}");
+                sb.AppendLine("Press any key to close");
             }
+
+            AppendRecentLog(sb, recentLogEntries, lastMessage);
 
             var output = sb.ToString();
             var lines = output.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -172,6 +175,7 @@ namespace RpgGame.Console.Rendering
             var lines = new List<string>();
 
             lines.Add("== PLAYER ==");
+            lines.Add($"Name: {player.Name}");
             lines.Add($"Pos: {player.Position.Row},{player.Position.Col}");
             lines.Add("");
 
@@ -189,8 +193,10 @@ namespace RpgGame.Console.Rendering
             lines.Add(FormatStat("WIS", player.Stats.Wisdom, effectiveStats.Wisdom));
             lines.Add("");
 
+            /*
             lines.Add("== LAST ==");
             lines.Add(string.IsNullOrWhiteSpace(lastMessage) ? "(none)" : lastMessage);
+            */
 
             //x lines.Add("");
             lines.Add("== EQUIPPED ==");
@@ -198,6 +204,27 @@ namespace RpgGame.Console.Rendering
             lines.Add($"Right: {(player.Hands.Right?.GetDescription() ?? "(empty)")}");
 
             return lines.ToArray();
+        }
+
+        private static void AppendRecentLog(StringBuilder sb, IReadOnlyList<string> recentLogEntries, string lastMessage)
+        {
+            sb.AppendLine(new string('-', 90));
+
+            sb.AppendLine("== LAST ==");
+            sb.AppendLine(string.IsNullOrWhiteSpace(lastMessage) ? "(none)" : lastMessage);
+
+            sb.AppendLine("Event log:");
+
+            if (recentLogEntries.Count == 0)
+            {
+                sb.AppendLine("(empty)");
+                return;
+            }
+
+            foreach (var entry in recentLogEntries)
+            {
+                sb.AppendLine(entry);
+            }
         }
 
         private static string FormatStat(string label, int baseValue, int effectiveValue)

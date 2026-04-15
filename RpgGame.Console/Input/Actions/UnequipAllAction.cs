@@ -17,6 +17,7 @@ namespace RpgGame.Console.Input.Actions
         {
             context.Player.Hands.UnequipAllToInventory();
             context.LastMessage = "Unequipped all.";
+            RpgGame.Core.Logging.GameLog.Write(context.LastMessage);
         }
     }
 }

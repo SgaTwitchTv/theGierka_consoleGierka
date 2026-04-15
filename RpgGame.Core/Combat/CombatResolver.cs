@@ -63,11 +63,13 @@ namespace RpgGame.Core.Combat
 
             int dealtDamage = Math.Max(0, outgoingDamage - enemy.Armor);
             enemy.TakeDamage(dealtDamage);
+            RpgGame.Core.Logging.GameLog.Write($"{attackStyle.Name} attack dealt {dealtDamage} damage to {enemy.Name}.");
 
             if (!enemy.IsAlive)
             {
                 world.Cell(enemy.Position).Enemy = null;
-                message = $"{attackStyle.Name} attack defeated {enemy.Name}.";
+                message = $"{attackStyle.Name} attack hit {enemy.Name} for {dealtDamage} and defeated it.";
+                RpgGame.Core.Logging.GameLog.Write($"Defeated {enemy.Name}.");
                 return true;
             }
 
@@ -76,6 +78,7 @@ namespace RpgGame.Core.Combat
 
             int receivedDamage = Math.Max(0, enemy.Attack - defense);
             player.Stats.ReduceHealth(receivedDamage);
+            RpgGame.Core.Logging.GameLog.Write($"{enemy.Name} attacked {player.Name} for {receivedDamage} damage.");
 
             if (player.Stats.Health <= 0)
             {

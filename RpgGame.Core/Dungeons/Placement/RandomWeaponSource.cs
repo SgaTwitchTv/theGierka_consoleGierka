@@ -22,7 +22,7 @@ namespace RpgGame.Core.Dungeons.Placement
                 _ => new Dagger(),
             };
 
-            IWeapon modifiedWeapon = baseWeapon;
+            IWeapon modifiedWeapon = baseWeapon;    // Start with the base weapon and apply modifiers based on random rolls.
 
             if (random.Next(4) == 1)
             {

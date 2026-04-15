@@ -16,6 +16,7 @@ namespace RpgGame.Console.Input.Actions
         {
             context.Player.TryPickUp(context.World, out var message);
             context.LastMessage = message;
+            RpgGame.Core.Logging.GameLog.Write(message);
         }
     }
 }
